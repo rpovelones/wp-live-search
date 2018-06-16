@@ -16,6 +16,8 @@ $ bower install
 $ gulp
 ```
 
+For more information on the dev tools/commands available, visit the [Roots Sage Repo](https://github.com/roots/sage/tree/8.5.4).
+
 ## Requirements
 
 | Prerequisite    | How to check | How to install
@@ -24,5 +26,3 @@ $ gulp
 | Node.js >= 4.5  | `node -v`    | [nodejs.org](http://nodejs.org/) |
 | gulp >= 3.8.10  | `gulp -v`    | `npm install -g gulp` |
 | Bower >= 1.3.12 | `bower -v`   | `npm install -g bower` |
-
-For more information on Sage, visit the [repository](https://github.com/roots/sage/tree/8.5.4).
