@@ -7,9 +7,10 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.0.0"
+    "bootstrap": "^4.0.0",
+    "axios": "^0.18.0"
   },
-    "overrides": {
+  "overrides": {
     "bootstrap": {
       "main": [
         "./scss/bootstrap.scss",

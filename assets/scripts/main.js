@@ -1,3 +1,105 @@
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ *
+ * @link https://davidwalsh.name/javascript-debounce-function
+ */
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) {
+        func.apply(context, args);
+      }
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) {
+      func.apply(context, args);
+    }
+  };
+}
+
+/**
+ * Append html markup to the posts wrapper.
+ *
+ * @param object | data
+ */
+function appendHTML( data ) {
+
+  var $wrapper = jQuery('#js-results-wrapper');
+
+  var html = '<div class="card w-75">'+
+    '<div class="card-body">'+
+      '<h5 class="card-title">'+ data.title.rendered +'</h5>'+
+      '<p class="card-text">'+ data.excerpt.rendered +'</p>'+
+      '<a href="'+ data.link +'" class="btn btn-primary" target="_blank">Read More</a>'+
+    '</div>'+
+  '</div>';
+
+  $wrapper.append(html);
+
+}
+
+/**
+ * Get request from WP-API posts endpoint.
+ * Note: currently only passes with search arg.
+ *
+ *
+ */
+function getRequest( query ) {
+
+  var $wrapper = jQuery('#js-results-wrapper');
+
+  axios.get('/wp-json/wp/v2/posts?search='+query)
+    .then(function (response) {
+
+      jQuery('.loader').addClass('d-none');
+
+      if ( response.data.length > 0 ) {
+        jQuery(response.data).each(function() {
+          appendHTML( this );
+        });
+      } else {
+        $wrapper.append('<div class="alert alert-warning" role="alert">No posts found.</div>');
+      }
+
+    })
+    .catch(function (error) {
+      $wrapper.append('<div class="alert alert-danger" role="alert">Aw snap! There was an error.</div>');
+    });
+
+}
+
+/**
+ * Clear posts from wrapper.
+ */
+function clearPosts() {
+  var $wrapper = jQuery('#js-results-wrapper');
+  jQuery('.loader').removeClass('d-none');
+  $wrapper.empty();
+}
+
+/**
+ * Init ajax search.
+ */
+function initAjaxSearch() {
+
+  jQuery('#js-search').on('keypress paste', debounce(function(e) {
+
+    var query = jQuery(this).val();
+    clearPosts();
+    getRequest(query);
+
+  }, 500));
+
+}
+
 /* ========================================================================
  * DOM-based Routing
  * Based on http://goo.gl/EUTi53 by Paul Irish
@@ -22,6 +124,7 @@
       },
       finalize: function() {
         // JavaScript to be fired on all pages, after page specific JS is fired
+        initAjaxSearch();
       }
     },
     // Home page

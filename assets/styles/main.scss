@@ -1,19 +1,54 @@
-@import "common/variables";
-
 // Automatically injected Bower dependencies via wiredep (never manually edit this block)
 // bower:scss
 @import "../../bower_components/bootstrap/scss/bootstrap.scss";
 // endbower
 
-@import "common/global";
-@import "components/buttons";
-@import "components/comments";
-@import "components/forms";
-@import "components/grid";
-@import "components/wp-classes";
-@import "layouts/header";
-@import "layouts/sidebar";
-@import "layouts/footer";
-@import "layouts/pages";
-@import "layouts/posts";
-@import "layouts/tinymce";
+header {
+	text-align: center;
+	margin: 40px;
+}
+
+svg {
+	vertical-align: middle;
+}
+
+.main {
+	@media (min-width: 768px) {
+		padding: 0 100px;
+	}
+}
+
+input[type="search"] {
+	width: 100%;
+	height: 60px;
+	border-radius: 0;
+	border-width: 2px;
+	font-size: 20px;
+	padding-right: 60px;
+}
+
+.search-box {
+	margin-bottom: 40px;
+	position: relative;
+
+	.search-icon {
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 60px;
+		width: 60px;
+		background: none;
+		border: none;
+		padding: 12px;
+		pointer-events: none;
+	}
+}
+
+.card {
+	margin-bottom: 20px;
+}
+
+.loader {
+	text-align: center;
+}
