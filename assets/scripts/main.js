@@ -26,79 +26,89 @@ function debounce(func, wait, immediate) {
 }
 
 /**
- * Append html markup to the posts wrapper.
+ * Ajax Posts Library.
  *
- * @param object | data
+ * Initalize with ajaxPosts.init() on document ready.
  */
-function appendHTML( data ) {
+var ajaxPosts = {
 
-  var $wrapper = jQuery('#js-results-wrapper');
+  /**
+   * Initialize
+   */
+  init: function() {
 
-  var html = '<div class="card w-75">'+
-    '<div class="card-body">'+
-      '<h5 class="card-title">'+ data.title.rendered +'</h5>'+
-      '<p class="card-text">'+ data.excerpt.rendered +'</p>'+
-      '<a href="'+ data.link +'" class="btn btn-primary" target="_blank">Read More</a>'+
-    '</div>'+
-  '</div>';
+    jQuery('#js-search').on('keypress paste', debounce(function(e) {
 
-  $wrapper.append(html);
+      var query = jQuery(this).val();
 
-}
+      ajaxPosts.clearPosts();
+      ajaxPosts.getRequest(query);
 
-/**
- * Get request from WP-API posts endpoint.
- * Note: currently only passes with search arg.
- *
- *
- */
-function getRequest( query ) {
+    }, 500));
 
-  var $wrapper = jQuery('#js-results-wrapper');
+  },
 
-  axios.get('/wp-json/wp/v2/posts?search='+query)
-    .then(function (response) {
+  /**
+   * Append html results to the posts wrapper
+   *
+   * @param object | data
+   */
+  appendHTML: function( data ) {
 
-      jQuery('.loader').addClass('d-none');
+    var $wrapper = jQuery('#js-results-wrapper');
 
-      if ( response.data.length > 0 ) {
-        jQuery(response.data).each(function() {
-          appendHTML( this );
-        });
-      } else {
-        $wrapper.append('<div class="alert alert-warning" role="alert">No posts found.</div>');
-      }
+    var html = '<div class="card w-75">'+
+      '<div class="card-body">'+
+        '<h5 class="card-title">'+ data.title.rendered +'</h5>'+
+        '<p class="card-text">'+ data.excerpt.rendered +'</p>'+
+        '<a href="'+ data.link +'" class="btn btn-primary" target="_blank">Read More</a>'+
+      '</div>'+
+    '</div>';
 
-    })
-    .catch(function (error) {
-      $wrapper.append('<div class="alert alert-danger" role="alert">Aw snap! There was an error.</div>');
-    });
+    $wrapper.append(html);
 
-}
+  },
 
-/**
- * Clear posts from wrapper.
- */
-function clearPosts() {
-  var $wrapper = jQuery('#js-results-wrapper');
-  jQuery('.loader').removeClass('d-none');
-  $wrapper.empty();
-}
+  /**
+   * Get request from WP-API posts endpoint.
+   * Note: currently only passes with search arg.
+   *
+   * @param string | query
+   */
+  getRequest: function( query ) {
 
-/**
- * Init ajax search.
- */
-function initAjaxSearch() {
+    var $wrapper = jQuery('#js-results-wrapper');
 
-  jQuery('#js-search').on('keypress paste', debounce(function(e) {
+    axios.get('/wp-json/wp/v2/posts?search='+query)
+      .then(function (response) {
 
-    var query = jQuery(this).val();
-    clearPosts();
-    getRequest(query);
+        jQuery('.loader').addClass('d-none');
 
-  }, 500));
+        if ( response.data.length > 0 ) {
+          jQuery(response.data).each(function() {
+            ajaxPosts.appendHTML( this );
+          });
+        } else {
+          $wrapper.append('<div class="alert alert-warning" role="alert">No posts found.</div>');
+        }
 
-}
+      })
+      .catch(function (error) {
+        $wrapper.append('<div class="alert alert-danger" role="alert">Aw snap! There was an error.</div>');
+      });
+
+  },
+
+  /**
+   * Clear posts from wrapper.
+   */
+  clearPosts: function() {
+    var $wrapper = jQuery('#js-results-wrapper');
+    jQuery('.loader').removeClass('d-none');
+    $wrapper.empty();
+  }
+
+};
 
 /* ========================================================================
  * DOM-based Routing
@@ -124,7 +134,7 @@ function initAjaxSearch() {
       },
       finalize: function() {
         // JavaScript to be fired on all pages, after page specific JS is fired
-        initAjaxSearch();
+        ajaxPosts.init();
       }
     },
     // Home page
